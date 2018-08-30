@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertEquals;
 
-public class DayWeatherConditionsTest {
+public class WeatherConditionsTest {
 
     private LocalDateTime dateTime;
     private WeatherConditions dayForecast;

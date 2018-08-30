@@ -33,17 +33,17 @@ public class WeatherServiceImpl implements WeatherService {
     public WeatherConditions getWeatherNow(WeatherRequest request) {
         Instant now = Instant.now();
         request.setTime(now);
-        return getWeatherAtTime(request, Constants.EXCLUDE_FOR_CURRENT);
+        return getWeatherAtTime(request);
     }
 
-    private WeatherConditions getWeatherOfDay(WeatherRequest request, String exclusion) {
+    private WeatherConditions getWeatherOfDay(WeatherRequest request) {
         if (validationService.isValidUnit(request.getUnit())) {
             //If its invalid, just use Celsius, dont want to keep making it more difficult for now
             request.setUnit(Constants.CELSIUS);
         }
         request.setUnitName(request.getUnit().equals("C") ? Constants.CELSIUS_UNIT_NAME : Constants.FAHRENHEIT_UNIT_NAME);
         request.setCity(CitiesService.getCityByName(request.getCityName()));
-        ResponseEntity<DarkSkyForecastDTO> entity = darkSkyResource.getWeatherFromDarksky(request, exclusion);
+        ResponseEntity<DarkSkyForecastDTO> entity = darkSkyResource.getWeatherFromDarksky(request, Constants.EXCLUDE_FOR_WEEK);
         return converter.convertDarkSkyToWeeklyForecast(entity.getBody(), request);
     }
 
@@ -58,7 +58,7 @@ public class WeatherServiceImpl implements WeatherService {
         ArrayList<WeatherConditions> pastWeek = new ArrayList<>();
         Instant now = Instant.now();
         request.setTime(now);
-        WeatherConditions todayWeather = getWeatherOfDay(request, Constants.EXCLUDE_FOR_WEEK);
+        WeatherConditions todayWeather = getWeatherOfDay(request);
         pastWeek.add(todayWeather);
 
         LocalDateTime today = LocalDateTime.ofInstant(now, todayWeather.getTimezone());
@@ -66,7 +66,7 @@ public class WeatherServiceImpl implements WeatherService {
         for (int i = 6; i > 0; i--) {
             today = today.minusDays(1);
             request.setTime(today.toInstant(ZoneOffset.UTC));
-            WeatherConditions results = getWeatherOfDay(request, Constants.EXCLUDE_FOR_WEEK);
+            WeatherConditions results = getWeatherOfDay(request);
             pastWeek.add(results);
         }
 
@@ -74,7 +74,7 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
 
-    private WeatherConditions getWeatherAtTime(WeatherRequest request, String exclusion) {
+    private WeatherConditions getWeatherAtTime(WeatherRequest request) {
 
         if (validationService.isValidUnit(request.getUnit())) {
             //If its invalid, just use Celsius, dont want to keep making it more difficult for now
@@ -82,7 +82,7 @@ public class WeatherServiceImpl implements WeatherService {
         }
         request.setUnitName(request.getUnit().equals("C") ? Constants.CELSIUS_UNIT_NAME : Constants.FAHRENHEIT_UNIT_NAME);
         request.setCity(CitiesService.getCityByName(request.getCityName()));
-        ResponseEntity<DarkSkyForecastDTO> entity = darkSkyResource.getWeatherFromDarksky(request, exclusion);
+        ResponseEntity<DarkSkyForecastDTO> entity = darkSkyResource.getWeatherFromDarksky(request, Constants.EXCLUDE_FOR_CURRENT);
         return converter.convertDarkskyToDayForecast(entity.getBody(), request);
     }
 }
