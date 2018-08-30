@@ -34,7 +34,7 @@ public class WeatherServiceImpl implements WeatherService {
     private DarkSkyResource darkSkyResource;
 
     @Override
-    public WeatherConditions getWeatherNow(WeatherRequest request) throws BadUnitException {
+    public WeatherConditions getWeatherNow(WeatherRequest request) {
         WeatherConditions conditions;
         if (!validationService.isValidUnit(request.getUnit())) {
             throw new BadUnitException();
