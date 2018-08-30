@@ -1,6 +1,6 @@
 package com.darkona.weather.weatherbot.request;
 
-import com.darkona.weather.weatherbot.domain.CityDTO;
+import com.darkona.weather.weatherbot.domain.City;
 import lombok.Data;
 
 import java.time.Instant;
@@ -12,7 +12,7 @@ public class WeatherRequest {
 
     private Instant time;
 
-    private CityDTO city;
+    private City city;
     private String unit;
     private String unitName;
 

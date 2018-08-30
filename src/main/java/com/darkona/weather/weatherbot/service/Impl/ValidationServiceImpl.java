@@ -12,7 +12,7 @@ public class ValidationServiceImpl implements ValidationService {
     @Override
     public boolean isValidUnit(String unit){
         final Pattern pattern = Pattern.compile("^(["+ Constants.CELSIUS + Constants.FAHRENHEIT +"])");
-        return !pattern.matcher(unit.toUpperCase()).matches();
+        return pattern.matcher(unit.toUpperCase()).matches();
     }
 
 

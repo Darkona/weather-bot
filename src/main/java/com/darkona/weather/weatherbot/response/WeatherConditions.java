@@ -13,6 +13,9 @@ import java.time.format.DateTimeFormatter;
 @Data
 public class WeatherConditions {
 
+    @JsonProperty
+    private String error;
+
     @JsonIgnore
     private Double temperature;
 
@@ -40,7 +43,7 @@ public class WeatherConditions {
 
     @JsonProperty("humidity")
     public String getHumidity(){
-        return Util.formatNoDecimals(humidity) + "%";
+        return humidity != null ? Util.formatNoDecimals(humidity) + "%" : null;
     }
 
     @JsonProperty("temperature")
@@ -51,12 +54,12 @@ public class WeatherConditions {
     @JsonProperty("date")
     public String getFormattedDate(){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        return dateTime.format(formatter);
+        return dateTime != null ? dateTime.format(formatter) : null;
     }
 
     @JsonProperty("time")
     public String getFormattedTime(){
-        if (isTimeEnabled()) {
+        if (isTimeEnabled() && dateTime != null) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
             return dateTime.format(formatter);
         }

@@ -1,6 +1,6 @@
 package com.darkona.weather.weatherbot.service.Impl;
 
-import com.darkona.weather.weatherbot.domain.CityDTO;
+import com.darkona.weather.weatherbot.domain.City;
 
 import java.util.HashMap;
 
@@ -14,8 +14,8 @@ public class CitiesService {
         return ourInstance;
     }
 
-    public static CityDTO getCityByName(String name){
-        CityDTO city = new CityDTO();
+    public static City getCityByName(String name) {
+        City city = new City();
         String[] coords = cityList.get(name).split(",");
         city.setName(name);
         city.setLatitude(coords[0].trim());

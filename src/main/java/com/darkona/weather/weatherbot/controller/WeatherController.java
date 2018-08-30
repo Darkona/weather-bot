@@ -5,6 +5,7 @@ import com.darkona.weather.weatherbot.response.WeatherConditions;
 import com.darkona.weather.weatherbot.service.Impl.CitiesService;
 import com.darkona.weather.weatherbot.service.WeatherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 @RequestMapping(value = "/weather", produces = "application/hal+json")
 public class WeatherController {
 
-    /*This is a hardcoded "CityDTO service" which would get coordinates from another API or database given the city name*/
+    /*This is a hardcoded "City service" which would get coordinates from another API or database given the city name*/
     private CitiesService cities = CitiesService.getInstance();
 
     @Autowired
@@ -21,7 +22,7 @@ public class WeatherController {
 
     @GetMapping("/currentWeather")
     @ResponseBody
-    public WeatherConditions currentWeather(@RequestParam(name = "city") String city, @RequestParam(name = "unit", required = false, defaultValue = "C") String unit) {
+    public ResponseEntity currentWeather(@RequestParam(name = "city") String city, @RequestParam(name = "unit", required = false, defaultValue = "C") String unit) {
         return weatherService.getWeatherNow(new WeatherRequest(city, unit));
     }
 

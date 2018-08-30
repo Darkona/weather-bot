@@ -11,5 +11,6 @@ public class Constants {
     public static final String API_URI = "https://api.darksky.net/forecast/";
     public static final String EXCLUDE_FOR_CURRENT = "minutely,hourly,flags,alerts,daily";
     public static final String EXCLUDE_FOR_WEEK = "minutely,hourly,flags,alerts,currently";
+    public static final String WRONG_UNIT = "Wrong temperature unit";
 
 }

@@ -9,6 +9,7 @@ import com.darkona.weather.weatherbot.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -24,32 +25,35 @@ public class WeatherServiceImpl implements WeatherService {
 
     @Autowired
     private ConversionServiceImpl converter;
+
     @Autowired
     private ValidationServiceImpl validationService;
+
     @Autowired
     private DarkSkyResource darkSkyResource;
 
+    @Override
+    public ResponseEntity<WeatherConditions> getWeatherNow(WeatherRequest request) {
+        WeatherConditions responseBody;
+        HttpStatus status;
+        if (!validationService.isValidUnit(request.getUnit())) {
+            responseBody = new WeatherConditions();
+            responseBody.setError(Constants.WRONG_UNIT);
+            status = HttpStatus.BAD_REQUEST;
 
-    public WeatherConditions getWeatherNow(WeatherRequest request) {
-        Instant now = Instant.now();
-        request.setTime(now);
-        return getWeatherAtTime(request);
-    }
-
-    private WeatherConditions getWeatherOfDay(WeatherRequest request) {
-        if (validationService.isValidUnit(request.getUnit())) {
-            //If its invalid, just use Celsius, dont want to keep making it more difficult for now
-            request.setUnit(Constants.CELSIUS);
+        } else {
+            Instant now = Instant.now();
+            request.setTime(now);
+            responseBody = getWeatherAtTime(request);
+            status = HttpStatus.OK;
         }
-        request.setUnitName(request.getUnit().equals("C") ? Constants.CELSIUS_UNIT_NAME : Constants.FAHRENHEIT_UNIT_NAME);
-        request.setCity(CitiesService.getCityByName(request.getCityName()));
-        ResponseEntity<DarkSkyForecastDTO> entity = darkSkyResource.getWeatherFromDarksky(request, Constants.EXCLUDE_FOR_WEEK);
-        return converter.convertDarkSkyToWeeklyForecast(entity.getBody(), request);
+        return new ResponseEntity<>(responseBody, status);
     }
+
 
     @Override
     public ArrayList<WeatherConditions> getPastWeek(WeatherRequest request) {
-        if (validationService.isValidUnit(request.getUnit())) {
+        if (!validationService.isValidUnit(request.getUnit())) {
             //If its invalid, just use Celsius, dont want to keep making it more difficult for now
             request.setUnit(Constants.CELSIUS);
         }
@@ -73,13 +77,14 @@ public class WeatherServiceImpl implements WeatherService {
         return pastWeek;
     }
 
+    private WeatherConditions getWeatherOfDay(WeatherRequest request) {
+        request.setUnitName(request.getUnit().equals("C") ? Constants.CELSIUS_UNIT_NAME : Constants.FAHRENHEIT_UNIT_NAME);
+        request.setCity(CitiesService.getCityByName(request.getCityName()));
+        ResponseEntity<DarkSkyForecastDTO> entity = darkSkyResource.getWeatherFromDarksky(request, Constants.EXCLUDE_FOR_WEEK);
+        return converter.convertDarkSkyToWeeklyForecast(entity.getBody(), request);
+    }
 
     private WeatherConditions getWeatherAtTime(WeatherRequest request) {
-
-        if (validationService.isValidUnit(request.getUnit())) {
-            //If its invalid, just use Celsius, dont want to keep making it more difficult for now
-            request.setUnit(Constants.CELSIUS);
-        }
         request.setUnitName(request.getUnit().equals("C") ? Constants.CELSIUS_UNIT_NAME : Constants.FAHRENHEIT_UNIT_NAME);
         request.setCity(CitiesService.getCityByName(request.getCityName()));
         ResponseEntity<DarkSkyForecastDTO> entity = darkSkyResource.getWeatherFromDarksky(request, Constants.EXCLUDE_FOR_CURRENT);

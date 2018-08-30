@@ -3,7 +3,7 @@ package com.darkona.weather.weatherbot.domain;
 import lombok.Data;
 
 @Data
-public class CityDTO {
+public class City {
 
     private String name;
     private String latitude;
