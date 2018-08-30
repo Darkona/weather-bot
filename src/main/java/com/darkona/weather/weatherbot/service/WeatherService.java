@@ -1,15 +1,15 @@
 package com.darkona.weather.weatherbot.service;
 
+import com.darkona.weather.weatherbot.exception.BadUnitException;
 import com.darkona.weather.weatherbot.request.WeatherRequest;
 import com.darkona.weather.weatherbot.response.WeatherConditions;
-import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public interface WeatherService {
 
-    ResponseEntity getWeatherNow(WeatherRequest request);
+    WeatherConditions getWeatherNow(WeatherRequest request) throws BadUnitException;
 
-    ArrayList<WeatherConditions> getPastWeek(WeatherRequest request) throws Exception;
+    List<WeatherConditions> getPastWeek(WeatherRequest request);
 
 }

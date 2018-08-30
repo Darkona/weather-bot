@@ -1,15 +1,17 @@
-package com.darkona.weather.weatherbot.service.Impl;
+package com.darkona.weather.weatherbot.service.impl;
 
 import com.darkona.weather.weatherbot.domain.City;
 import com.darkona.weather.weatherbot.domain.CurrentlyDTO;
 import com.darkona.weather.weatherbot.domain.DailyDTO;
 import com.darkona.weather.weatherbot.domain.DarkSkyForecastDTO;
+import com.darkona.weather.weatherbot.exception.BadUnitException;
 import com.darkona.weather.weatherbot.request.WeatherRequest;
 import com.darkona.weather.weatherbot.resource.DarkSkyResource;
 import com.darkona.weather.weatherbot.response.WeatherConditions;
-import com.darkona.weather.weatherbot.util.Constants;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -23,6 +25,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.any;
@@ -42,6 +45,9 @@ public class WeatherServiceImplTest {
 
     @InjectMocks
     WeatherServiceImpl weatherService;
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     private DarkSkyForecastDTO forecastCelsius;
     private DarkSkyForecastDTO forecastFahrenheit;
@@ -104,12 +110,12 @@ public class WeatherServiceImplTest {
         request.setTime(now);
         when(darkSkyResource.getWeatherFromDarksky(any(), any())).thenReturn(responseEntityC);
 
-        ResponseEntity<WeatherConditions> response = weatherService.getWeatherNow(request);
+        WeatherConditions response = weatherService.getWeatherNow(request);
 
-        assertEquals("15.0°C", response.getBody().getTemperature());
-        assertEquals("25%", response.getBody().getHumidity());
-        assertEquals("cloudy-day", response.getBody().getWeatherType());
-        assertNull(response.getBody().getError());
+        assertEquals("15.0°C", response.getTemperature());
+        assertEquals("25%", response.getHumidity());
+        assertEquals("cloudy-day", response.getWeatherType());
+        assertNull(response.getError());
     }
 
     @Test
@@ -118,13 +124,12 @@ public class WeatherServiceImplTest {
         request.setTime(now);
         when(darkSkyResource.getWeatherFromDarksky(any(), any())).thenReturn(responseEntityF);
 
-        ResponseEntity<WeatherConditions> response = weatherService.getWeatherNow(request);
+        WeatherConditions response = weatherService.getWeatherNow(request);
 
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals("59.0°F", response.getBody().getTemperature());
-        assertEquals("25%", response.getBody().getHumidity());
-        assertEquals("cloudy-day", response.getBody().getWeatherType());
-        assertNull(response.getBody().getError());
+        assertEquals("59.0°F", response.getTemperature());
+        assertEquals("25%", response.getHumidity());
+        assertEquals("cloudy-day", response.getWeatherType());
+        assertNull(response.getError());
     }
 
     @Test
@@ -132,16 +137,11 @@ public class WeatherServiceImplTest {
         WeatherRequest request = new WeatherRequest("London", "M");
         request.setTime(now);
         when(darkSkyResource.getWeatherFromDarksky(any(), any())).thenReturn(responseEntityC);
-
-        ResponseEntity<WeatherConditions> response = weatherService.getWeatherNow(request);
-
-        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
-        assertNotNull(response.getBody().getError());
-        assertEquals(Constants.WRONG_UNIT, response.getBody().getError());
-        assertNull(response.getBody().getWeatherType());
-        assertNull(response.getBody().getTemperature());
-        assertNull(response.getBody().getHumidity());
-
+        try {
+            WeatherConditions response = weatherService.getWeatherNow(request);
+            thrown.expect(BadUnitException.class);
+        } catch (Exception e) {
+        }
     }
 
     @Test
@@ -149,7 +149,7 @@ public class WeatherServiceImplTest {
         WeatherRequest request = new WeatherRequest("London", "F");
         request.setTime(now);
         when(darkSkyResource.getWeatherFromDarksky(any(), any())).thenReturn(responseEntityC);
-        ArrayList<WeatherConditions> response = weatherService.getPastWeek(request);
+        List<WeatherConditions> response = weatherService.getPastWeek(request);
         assertNotNull(response);
         assertFalse(response.isEmpty());
         assertEquals(7, response.size());

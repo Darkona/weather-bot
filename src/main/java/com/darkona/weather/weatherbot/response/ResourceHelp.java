@@ -2,16 +2,18 @@ package com.darkona.weather.weatherbot.response;
 
 import com.darkona.weather.weatherbot.controller.HomeController;
 import com.darkona.weather.weatherbot.controller.WeatherController;
+import lombok.Data;
 import org.springframework.hateoas.ResourceSupport;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
+@Data
 public class ResourceHelp extends ResourceSupport {
-    public String currentWeather = "weather/currentWeather";
-    public String pastWeek = "weather/pastWeek";
+    public static final String currentWeather = "weather/currentWeather";
+    public static final String pastWeek = "weather/pastWeek";
 
-    public ResourceHelp() throws Exception {
+    public ResourceHelp() {
         add(linkTo(WeatherController.class).withRel("weather"));
         add(linkTo(HomeController.class).withSelfRel());
         add(linkTo(methodOn(WeatherController.class).currentWeather("Santiago", "C")).withRel("currentWeatherInSantiagoChile"));

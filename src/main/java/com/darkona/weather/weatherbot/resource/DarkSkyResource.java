@@ -3,8 +3,7 @@ package com.darkona.weather.weatherbot.resource;
 import com.darkona.weather.weatherbot.domain.DarkSkyForecastDTO;
 import com.darkona.weather.weatherbot.request.WeatherRequest;
 import com.darkona.weather.weatherbot.util.Constants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -13,9 +12,8 @@ import java.util.Collections;
 
 
 @Service
+@Slf4j
 public class DarkSkyResource {
-
-    private static Logger logger = LoggerFactory.getLogger(DarkSkyResource.class);
 
     public ResponseEntity<DarkSkyForecastDTO> getWeatherFromDarksky(WeatherRequest request, String excluded) {
 
@@ -27,7 +25,7 @@ public class DarkSkyResource {
         String parameters = request.getCity().getLatitude() + "," + request.getCity().getLongitude() + "," + unixTime;
         parameters += "?excluded=" + excluded + "&units=" + request.getUnitName();
 
-        logger.info("Using parameters>>> " + parameters);
+        log.info("Using parameters>>> %s ", parameters);
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         return restTemplate.exchange(fullURI + parameters, HttpMethod.GET, entity, DarkSkyForecastDTO.class);

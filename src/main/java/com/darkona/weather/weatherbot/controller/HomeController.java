@@ -12,7 +12,7 @@ public class HomeController {
 
     @GetMapping("/")
     @ResponseBody
-    public ResourceHelp home() throws Exception {
+    public ResourceHelp home() {
         return new ResourceHelp();
     }
 }

@@ -19,6 +19,7 @@ public class WeatherConditionsTest {
         dayForecast = new WeatherConditions();
         dayForecast.setTemperature(23d);
         dayForecast.setDateTime(dateTime);
+        dayForecast.setTimeEnabled(true);
     }
 
     @Test
@@ -28,7 +29,7 @@ public class WeatherConditionsTest {
     }
 
     @Test
-    public void getFormattedDateTime() {
+    public void getFormattedTime() {
         String output = dayForecast.getFormattedTime();
         assertEquals("03:20 PM", output);
     }

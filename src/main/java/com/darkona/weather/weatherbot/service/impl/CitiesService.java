@@ -1,17 +1,15 @@
-package com.darkona.weather.weatherbot.service.Impl;
+package com.darkona.weather.weatherbot.service.impl;
 
 import com.darkona.weather.weatherbot.domain.City;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 
+@Service
 public class CitiesService {
-    private static CitiesService ourInstance = new CitiesService();
+
 
     private CitiesService() {
-    }
-
-    public static CitiesService getInstance() {
-        return ourInstance;
     }
 
     public static City getCityByName(String name) {
@@ -22,6 +20,7 @@ public class CitiesService {
         city.setLongitude(coords[1].trim());
         return city;
     }
+
     private static HashMap<String,String> cityList = new HashMap<>();
 
     static {

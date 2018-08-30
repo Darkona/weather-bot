@@ -1,4 +1,4 @@
-package com.darkona.weather.weatherbot.service.Impl;
+package com.darkona.weather.weatherbot.service.impl;
 
 import com.darkona.weather.weatherbot.domain.DarkSkyForecastDTO;
 import com.darkona.weather.weatherbot.request.WeatherRequest;

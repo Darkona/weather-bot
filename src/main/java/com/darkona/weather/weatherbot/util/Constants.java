@@ -2,6 +2,9 @@ package com.darkona.weather.weatherbot.util;
 
 public class Constants {
 
+    private Constants() {
+
+    }
     public static final String CELSIUS = "C";
     public static final String FAHRENHEIT = "F";
     public static final String CELSIUS_UNIT_NAME = "si";

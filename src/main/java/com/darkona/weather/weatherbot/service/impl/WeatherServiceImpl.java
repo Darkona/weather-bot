@@ -1,15 +1,16 @@
-package com.darkona.weather.weatherbot.service.Impl;
+package com.darkona.weather.weatherbot.service.impl;
 
 import com.darkona.weather.weatherbot.domain.DarkSkyForecastDTO;
+import com.darkona.weather.weatherbot.exception.BadUnitException;
 import com.darkona.weather.weatherbot.request.WeatherRequest;
 import com.darkona.weather.weatherbot.resource.DarkSkyResource;
 import com.darkona.weather.weatherbot.response.WeatherConditions;
+import com.darkona.weather.weatherbot.service.ConversionService;
+import com.darkona.weather.weatherbot.service.ValidationService;
 import com.darkona.weather.weatherbot.service.WeatherService;
 import com.darkona.weather.weatherbot.util.Constants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -17,64 +18,57 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
+@Slf4j
 public class WeatherServiceImpl implements WeatherService {
 
-    private static Logger logger = LoggerFactory.getLogger(WeatherService.class);
+    @Autowired
+    private ConversionService converter;
 
     @Autowired
-    private ConversionServiceImpl converter;
-
-    @Autowired
-    private ValidationServiceImpl validationService;
+    private ValidationService validationService;
 
     @Autowired
     private DarkSkyResource darkSkyResource;
 
     @Override
-    public ResponseEntity<WeatherConditions> getWeatherNow(WeatherRequest request) {
-        WeatherConditions responseBody;
-        HttpStatus status;
+    public WeatherConditions getWeatherNow(WeatherRequest request) throws BadUnitException {
+        WeatherConditions conditions;
         if (!validationService.isValidUnit(request.getUnit())) {
-            responseBody = new WeatherConditions();
-            responseBody.setError(Constants.WRONG_UNIT);
-            status = HttpStatus.BAD_REQUEST;
-
+            throw new BadUnitException();
         } else {
             Instant now = Instant.now();
             request.setTime(now);
-            responseBody = getWeatherAtTime(request);
-            status = HttpStatus.OK;
+            conditions = getWeatherAtTime(request);
         }
-        return new ResponseEntity<>(responseBody, status);
+        return conditions;
     }
 
 
     @Override
-    public ArrayList<WeatherConditions> getPastWeek(WeatherRequest request) {
+    public List<WeatherConditions> getPastWeek(WeatherRequest request) {
+
         if (!validationService.isValidUnit(request.getUnit())) {
-            //If its invalid, just use Celsius, dont want to keep making it more difficult for now
-            request.setUnit(Constants.CELSIUS);
+            throw new BadUnitException();
+        } else {
+            ArrayList<WeatherConditions> pastWeek = new ArrayList<>();
+            Instant now = Instant.now();
+            request.setTime(now);
+            WeatherConditions todayWeather = getWeatherOfDay(request);
+            pastWeek.add(todayWeather);
+
+            LocalDateTime today = LocalDateTime.ofInstant(now, todayWeather.getTimezone());
+
+            for (int i = 6; i > 0; i--) {
+                today = today.minusDays(1);
+                request.setTime(today.toInstant(ZoneOffset.UTC));
+                WeatherConditions results = getWeatherOfDay(request);
+                pastWeek.add(results);
+            }
+            return pastWeek;
         }
-
-        //Make past week
-        ArrayList<WeatherConditions> pastWeek = new ArrayList<>();
-        Instant now = Instant.now();
-        request.setTime(now);
-        WeatherConditions todayWeather = getWeatherOfDay(request);
-        pastWeek.add(todayWeather);
-
-        LocalDateTime today = LocalDateTime.ofInstant(now, todayWeather.getTimezone());
-
-        for (int i = 6; i > 0; i--) {
-            today = today.minusDays(1);
-            request.setTime(today.toInstant(ZoneOffset.UTC));
-            WeatherConditions results = getWeatherOfDay(request);
-            pastWeek.add(results);
-        }
-
-        return pastWeek;
     }
 
     private WeatherConditions getWeatherOfDay(WeatherRequest request) {
