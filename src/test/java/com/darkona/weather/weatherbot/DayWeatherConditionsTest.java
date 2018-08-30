@@ -1,12 +1,12 @@
 package com.darkona.weather.weatherbot;
 
-import com.darkona.weather.weatherbot.Response.WeatherConditions;
+import com.darkona.weather.weatherbot.response.WeatherConditions;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class DayWeatherConditionsTest {
 

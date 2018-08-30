@@ -1,4 +1,4 @@
-package com.darkona.weather.weatherbot.DTO;
+package com.darkona.weather.weatherbot.domain;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -13,8 +13,8 @@ public class DarkSkyForecastDTO {
     String latitude;
     String longitude;
     ZoneId timezone;
-    Currently currently;
-
+    CurrentlyDTO currently;
+    DailyDTO daily;
     public void setTimezone(String timezone){
         this.timezone = ZoneId.of(timezone);
     }

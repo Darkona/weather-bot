@@ -1,4 +1,4 @@
-package com.darkona.weather.weatherbot.DTO;
+package com.darkona.weather.weatherbot.domain;
 
 import lombok.Data;
 

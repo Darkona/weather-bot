@@ -1,17 +1,17 @@
-package com.darkona.weather.weatherbot.Service.Impl;
+package com.darkona.weather.weatherbot.service.Impl;
 
-import com.darkona.weather.weatherbot.DTO.CityDTO;
+import com.darkona.weather.weatherbot.domain.CityDTO;
 
 import java.util.HashMap;
 
-public class Cities {
-    private static Cities ourInstance = new Cities();
+public class CitiesService {
+    private static CitiesService ourInstance = new CitiesService();
 
-    public static Cities getInstance() {
-        return ourInstance;
+    private CitiesService() {
     }
 
-    private Cities() {
+    public static CitiesService getInstance() {
+        return ourInstance;
     }
 
     public static CityDTO getCityByName(String name){
